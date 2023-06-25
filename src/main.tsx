@@ -1,10 +1,12 @@
-import React from 'react'
-import ReactDOM from 'react-dom/client'
-import App from './App.tsx'
-import './index.css'
+import ReactDOM from "react-dom/client";
+import App from "./App";
+import "antd/dist/reset.css";
+import "./index.css";
+// 在你的应用程序入口文件
+import {enableMapSet} from "immer";
 
-ReactDOM.createRoot(document.getElementById('root') as HTMLElement).render(
-  <React.StrictMode>
-    <App />
-  </React.StrictMode>,
-)
+enableMapSet();
+
+ReactDOM.createRoot(document.getElementById("root") as HTMLElement).render(
+  <App />
+);
