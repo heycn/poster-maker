@@ -1,4 +1,8 @@
-import useEditStore, {addCmp, fetchCanvas} from "src/store/editStore";
+import useEditStore, {
+  addCmp,
+  clearCanvas,
+  fetchCanvas,
+} from "src/store/editStore";
 import styles from "./index.module.less";
 import Cmp from "../Cmp";
 import {useEffect} from "react";
@@ -12,6 +16,8 @@ export default function Canvas() {
   useEffect(() => {
     if (id) {
       fetchCanvas(id);
+    } else {
+      clearCanvas();
     }
   }, []);
 
@@ -42,7 +48,7 @@ export default function Canvas() {
     addCmp(dragCmp);
   };
 
-  const allowDraop = (e) => {
+  const allowDrop = (e) => {
     e.preventDefault();
   };
   console.log("canvas render", cmps);
@@ -52,7 +58,7 @@ export default function Canvas() {
       className={styles.main}
       style={canvas.style}
       onDrop={onDrop}
-      onDragOver={allowDraop}>
+      onDragOver={allowDrop}>
       {cmps.map((item, index) => (
         <Cmp key={item.key} cmp={item} index={index}></Cmp>
       ))}
