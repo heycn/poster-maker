@@ -1,5 +1,5 @@
 import classNames from "classnames";
-import { memo, useState, useEffect } from "react";
+import {memo, useState, useEffect} from "react";
 import styles from "./index.module.less";
 import TextSider from "./TextSider";
 import ImgSider from "./ImgSider";

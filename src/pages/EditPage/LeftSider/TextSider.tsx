@@ -1,7 +1,7 @@
-import { defaultComponentStyle } from "src/utils/const";
+import {defaultComponentStyle} from "src/utils/const";
 import leftSideStyles from "./leftSide.module.less";
-import { addCmp } from "src/store/editStore";
-import { isTextComponent } from ".";
+import {addCmp} from "src/store/editStore";
+import {isTextComponent} from ".";
 
 const defaultStyle = {
   ...defaultComponentStyle,
@@ -43,11 +43,11 @@ const TextSider = () => {
             draggable={true}
             key={item.value}
             className={leftSideStyles.item}
-            onClick={() => addCmp({ ...item, type: isTextComponent })}
+            onClick={() => addCmp({...item, type: isTextComponent})}
             onDragStart={(e) => {
               e.dataTransfer.setData(
                 "drag-cmp",
-                JSON.stringify({ ...item, type: isTextComponent })
+                JSON.stringify({...item, type: isTextComponent})
               );
             }}>
             {item.value.indexOf("双击编辑") > -1
