@@ -12,12 +12,17 @@ import {getOnlyKey} from "src/utils";
 import Axios from "src/request/axios";
 import {getCanvasByIdEnd, saveCanvasEnd} from "src/request/end";
 import {resetZoom} from "./zoomStore";
+import {recordCanvasChangeHistory} from "./historySlice";
 
 const useEditStore = create(
   immer<EditStoreState & EditStoreAction>(() => ({
     canvas: getDefaultCanvas(),
     // 记录选中组件的下标
     assembly: new Set(),
+
+    // 历史
+    canvasChangeHistory: [{canvas: getDefaultCanvas(), assembly: new Set()}],
+    canvasChangeHistoryIndex: 0,
   }))
 );
 
@@ -25,6 +30,7 @@ export const clearCanvas = () => {
   useEditStore.setState((draft) => {
     draft.canvas = getDefaultCanvas();
     draft.assembly.clear();
+    recordCanvasChangeHistory(draft);
   });
 
   resetZoom();
@@ -34,6 +40,7 @@ export const addCmp = (_cmp: ICmp) => {
   useEditStore.setState((draft) => {
     draft.canvas.cmps.push({..._cmp, key: getOnlyKey()});
     draft.assembly = new Set([draft.canvas.cmps.length - 1]);
+    recordCanvasChangeHistory(draft);
   });
 };
 
@@ -61,6 +68,11 @@ export const fetchCanvas = async (id: number) => {
       draft.canvas = JSON.parse(res.content);
       draft.canvas.title = res.title;
       draft.assembly.clear();
+      // 初始化历史数据
+      draft.canvasChangeHistory = [
+        {canvas: draft.canvas, assembly: draft.assembly},
+      ];
+      draft.canvasChangeHistoryIndex = 0;
     });
 
     resetZoom();
@@ -135,10 +147,25 @@ export const updateAssemblyCmpsByDistance = (newStyle: Style) => {
   });
 };
 
+export const recordCanvasChangeHistory_2 = () => {
+  const store = useEditStore.getState();
+  if (
+    store.canvas ===
+    store.canvasChangeHistory[store.canvasChangeHistoryIndex].canvas
+  ) {
+    return;
+  }
+
+  useEditStore.setState((draft) => {
+    recordCanvasChangeHistory(draft);
+  });
+};
+
 // 修改画布 title
 export const updateCanvasTitle = (title: string) => {
   useEditStore.setState((draft) => {
     draft.canvas.title = title;
+    recordCanvasChangeHistory(draft);
   });
 };
 
@@ -146,6 +173,7 @@ export const updateCanvasTitle = (title: string) => {
 export const updateCanvasStyle = (_style: any) => {
   useEditStore.setState((draft) => {
     Object.assign(draft.canvas.style, _style);
+    recordCanvasChangeHistory(draft);
   });
 };
 
@@ -156,6 +184,7 @@ export const updateSelectedCmpStyle = (newStyle: Style) => {
       draft.canvas.cmps[selectedCmpIndexSelector(draft)].style,
       newStyle
     );
+    recordCanvasChangeHistory(draft);
   });
 };
 
@@ -164,6 +193,7 @@ export const updateSelectedCmpAttr = (name: string, value: string) => {
   useEditStore.setState((draft: any) => {
     const selectedIndex = selectedCmpIndexSelector(draft);
     draft.canvas.cmps[selectedIndex][name] = value;
+    recordCanvasChangeHistory(draft);
   });
 };
 
@@ -188,6 +218,8 @@ export const editAssemblyStyle = (_style: Style) => {
       }
 
       draft.canvas.cmps[index].style = _s;
+
+      recordCanvasChangeHistory(draft);
     });
   });
 };

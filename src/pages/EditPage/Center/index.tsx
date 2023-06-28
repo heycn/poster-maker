@@ -6,6 +6,7 @@ import useEditStore, {
 } from "src/store/editStore";
 import Zoom from "./Zoom";
 import useZoomStore from "src/store/zoomStore";
+import {goNextCanvasHistory, goPrevCanvasHistory} from "src/store/historySlice";
 
 export default function Center() {
   const canvas = useEditStore((state) => state.canvas);
@@ -30,6 +31,15 @@ export default function Center() {
           zoomIn();
           e.preventDefault();
           return;
+
+        // 撤销、回退
+        case "KeyZ":
+          if (e.shiftKey) {
+            goNextCanvasHistory();
+          } else {
+            goPrevCanvasHistory();
+          }
+          return;
       }
     }
   };
@@ -46,7 +56,10 @@ export default function Center() {
           setCmpSelected(-1);
         }
       }}
-      onKeyDown={keyDown}>
+      onKeyDown={keyDown}
+      onContextMenu={(e) => {
+        e.preventDefault();
+      }}>
       <Canvas />
 
       <Zoom />
