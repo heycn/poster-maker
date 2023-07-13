@@ -8,7 +8,7 @@ body {
   -moz-osx-font-smoothing: grayscale;
 }
 
-#root {
+main {
   width: 1vw;
   height: 1vh;
 }
